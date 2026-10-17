@@ -107,8 +107,8 @@
     const inputs = {
       fullName: document.getElementById('wl-name'),
       email: document.getElementById('wl-email'),
-      countryFrom: document.getElementById('wl-country'),
       featureWish: document.getElementById('wl-feature'),
+      countryFrom: document.getElementById('wl-country'),
       adultConfirmed: document.getElementById('wl-adult'),
       termsAccepted: document.getElementById('wl-terms')
     };
@@ -153,8 +153,8 @@
       const errors = {};
       if (!data.fullName || data.fullName.length > 160) errors.fullName = fieldMessages.fullName;
       if (!data.email || inputs.email.validity.typeMismatch || data.email.length > 254) errors.email = fieldMessages.email;
-      if (data.countryFrom.length > 80) errors.countryFrom = fieldMessages.countryFrom;
       if (data.featureWish.length < 3 || data.featureWish.length > 1000) errors.featureWish = fieldMessages.featureWish;
+      if (data.countryFrom.length > 80) errors.countryFrom = fieldMessages.countryFrom;
       if (!data.adultConfirmed) errors.adultConfirmed = fieldMessages.adultConfirmed;
       if (!data.termsAccepted) errors.termsAccepted = fieldMessages.termsAccepted;
       Object.keys(inputs).forEach(key => errorFor(key, errors[key]));

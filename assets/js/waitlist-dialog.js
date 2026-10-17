@@ -15,8 +15,6 @@
     invitation.innerHTML = '<h2>Help shape Xettl.</h2><p>Tell us what would make banking easier for you.</p><button type="button" class="button" data-open-waitlist>Join the waitlist</button>';
     section.before(invitation); dialog.append(section); document.body.append(dialog);
     const intro = section.querySelector('.waitlist-intro'); intro.querySelector('p').id = 'waitlist-dialog-description';
-    const brand = document.querySelector('.site-header .brand').cloneNode(true); brand.removeAttribute('href');
-    brand.removeAttribute('aria-label'); intro.prepend(brand);
     section.querySelectorAll('a[href]').forEach(link => {
       link.target = '_blank'; link.rel = 'noopener';
       const hint = document.createElement('span'); hint.className = 'visually-hidden'; hint.textContent = ' (opens in a new tab)'; link.append(hint);
@@ -43,6 +41,7 @@
       const focus = section.querySelector('input:not(:disabled)') || (status.textContent ? status : document.getElementById('waitlist-heading'));
       if (focus === status) status.setAttribute('tabindex', '-1');
       focus.focus({ preventScroll: true });
+      dialog.scrollTop = 0;
     }
     function finishClose() { if (dialog.open) dialog.close(); }
     function close() {

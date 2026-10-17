@@ -141,11 +141,8 @@
       <div class="waitlist-intro">
         <h2 id="waitlist-heading" tabindex="-1">Join the waitlist.</h2>
         <p>Moving countries is enough work. Tell us what would make banking easier for you.</p>
-        <p class="waitlist-privacy">Your answers stay private and help us decide what to build.</p>
-        <a class="text-link" href="privacy/index.html">How we handle your information ↗</a>
       </div>
       <form class="waitlist-form" id="waitlist-form" method="post" action="#waitlist" novalidate>
-          <p class="form-intro">Join the private waitlist. Open worldwide to adults aged 18+. Xettl is in development; accounts aren’t available yet.</p>
         <p id="signup-connection" class="connection-note" role="status"></p>
         <fieldset id="waitlist-fields">
           <legend class="visually-hidden">Your waitlist details</legend>
@@ -162,16 +159,20 @@
             <p class="field-error" id="wl-email-error"></p>
           </div>
           <div class="form-field">
+            <label for="wl-feature">What do you want better from your bank right now?</label>
+            <textarea id="wl-feature" name="featureWish" rows="4" minlength="3" maxlength="1000" required aria-describedby="wl-feature-help wl-feature-error"></textarea>
+            <p class="field-help-text" id="wl-feature-help">What’s missing today? Please leave out account numbers, ID documents and other sensitive details. Up to 1,000 characters.</p>
+            <p class="field-error" id="wl-feature-error"></p>
+          </div>
+          <div class="form-field">
             <label for="wl-country">Where are you moving from / moved from? <span class="optional">(optional)</span></label>
             <input id="wl-country" name="countryFrom" type="text" autocomplete="off" maxlength="80" aria-describedby="wl-country-help wl-country-error" />
             <p class="field-help-text" id="wl-country-help">Country or region. It’s fine to leave this blank.</p>
             <p class="field-error" id="wl-country-error"></p>
           </div>
-          <div class="form-field">
-            <label for="wl-feature">What do you want better from your bank right now?</label>
-            <textarea id="wl-feature" name="featureWish" rows="4" minlength="3" maxlength="1000" required aria-describedby="wl-feature-help wl-feature-error"></textarea>
-            <p class="field-help-text" id="wl-feature-help">What’s missing today? Please leave out account numbers, ID documents and other sensitive details. Up to 1,000 characters.</p>
-            <p class="field-error" id="wl-feature-error"></p>
+          <div class="signup-context">
+            <p class="form-intro">Join the private waitlist. Open worldwide to adults aged 18+. Xettl is in development; accounts aren’t available yet.</p>
+            <p class="waitlist-privacy">Your answers stay private and help us decide what to build. <a class="text-link" href="privacy/index.html">How we handle your information ↗</a></p>
           </div>
           <div class="signup-consents" role="group" aria-labelledby="email-preferences-heading">
             <p id="email-preferences-heading" class="consent-heading">Email preferences <span class="optional">(optional)</span></p>

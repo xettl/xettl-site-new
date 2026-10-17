@@ -1,22 +1,23 @@
 /* The platform owns modality; the liquid treatment stays outside reading/field targets. */
 html { scrollbar-gutter: stable; }
 html.signup-open { overflow: hidden; }
-.waitlist-dialog { color: var(--text); background: var(--canvas); width: min(1040px,calc(100vw - 48px)); max-width: none; max-height: calc(100dvh - 48px); margin: auto; padding: 0; border: 1px solid color-mix(in srgb,var(--accent) 25%,var(--border)); border-radius: 24px; overflow: hidden; box-shadow: 0 30px 100px #00112a55,0 0 65px #1266f125; overscroll-behavior: contain; }
+.waitlist-dialog { color: var(--text); background: var(--canvas); width: min(720px,calc(100vw - 48px)); max-width: none; max-height: calc(100dvh - 48px); margin: auto; padding: 0; border: 1px solid color-mix(in srgb,var(--accent) 25%,var(--border)); border-radius: 24px; overflow-y: auto; box-shadow: 0 30px 100px #00112a55,0 0 65px #1266f125; overscroll-behavior: contain; }
 .waitlist-dialog::backdrop { background: #0311249c; backdrop-filter: blur(10px); }
 .dialog-toolbar { position: sticky; top: 0; height: 0; z-index: 5; pointer-events: none; }
 .dialog-close { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; display: grid; place-items: center; padding: 12px; color: var(--text); background: var(--canvas); border: 1px solid var(--border); border-radius: 50%; cursor: pointer; pointer-events: auto; }
 .dialog-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .dialog-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-.waitlist-dialog .community-section { display: grid; grid-template-columns: .82fr 1.18fr; gap: 0; max-width: none; margin: 0; padding: 0; border: 0; }
-.waitlist-dialog .waitlist-intro { position: relative; min-width: 0; padding: 38px 32px; overflow: hidden; background: linear-gradient(155deg,var(--accent-soft),transparent 65%); border-right: 1px solid var(--border); }
-.waitlist-dialog .waitlist-intro > .brand { margin-bottom: 44px; font-size: 23px; pointer-events: none; }
-.waitlist-dialog .waitlist-intro h2 { font-size: 44px; line-height: 1.05; margin-bottom: 20px; }
-.waitlist-dialog .waitlist-intro > p { font-size: 17px; line-height: 1.6; margin: 0 0 20px; }
-.waitlist-dialog .waitlist-intro > .waitlist-privacy { font-size: 14px; margin: 0 0 14px; }
-.waitlist-dialog .waitlist-form { padding: 52px 36px 32px; max-height: calc(100dvh - 50px); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.waitlist-dialog .community-section { display: block; max-width: none; margin: 0; padding: 0; border: 0; }
+.waitlist-dialog .waitlist-intro { min-width: 0; padding: 32px 36px 0; }
+.waitlist-dialog .waitlist-intro h2 { padding-inline-end: 36px; font-size: 36px; line-height: 1.1; margin-bottom: 12px; }
+.waitlist-dialog .waitlist-intro > p { max-width: 56ch; font-size: 16px; line-height: 1.6; margin: 0; }
+.waitlist-dialog .waitlist-form { padding: 24px 36px 32px; }
 .waitlist-dialog .waitlist-form fieldset { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .waitlist-dialog .form-field:nth-of-type(n+3),.waitlist-dialog #wl-submit-btn { grid-column: 1 / -1; }
-.waitlist-dialog .form-intro { margin-bottom: 18px; max-width: 39ch; }
+.signup-context { grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.signup-context .form-intro { margin: 0 0 8px; max-width: none; font-size: inherit; }
+.signup-context .waitlist-privacy { margin: 0; }
+.signup-context .text-link { font-size: inherit; }
 .waitlist-dialog .connection-note { margin-bottom: 20px; font-size: 13px; padding: 10px 0; }
 .waitlist-dialog .form-field label { font-size: 14px; }
 .waitlist-dialog .form-field input,.waitlist-dialog .form-field textarea { border: 1px solid var(--field-line); border-radius: 10px; padding: 10px 12px; background: color-mix(in srgb,var(--canvas) 92%,var(--surface)); }
@@ -43,15 +44,11 @@ html.signup-open { overflow: hidden; }
 }
 @media (max-width: 767px) {
   .waitlist-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); border-radius: 18px; overflow-y: auto; }
-  .waitlist-dialog .community-section { display: block; }
-  .waitlist-dialog .waitlist-intro { padding: 28px 24px 0; border-right: 0; }
-  .waitlist-dialog .waitlist-intro > .brand { margin-bottom: 18px; font-size: 20px; }
+  .waitlist-dialog .waitlist-intro { padding: 28px 24px 0; }
   .waitlist-dialog .waitlist-intro h2 { font-size: 32px; margin-bottom: 12px; }
-  .waitlist-dialog .waitlist-intro > p { font-size: 15px; margin-bottom: 12px; }
-  .waitlist-dialog .waitlist-intro > .waitlist-privacy { font-size: 13px; margin-bottom: 10px; }
-  .waitlist-dialog .form-intro { display: block; font-size: 14px; }
-  .waitlist-dialog .waitlist-form { max-height: none; overflow: visible; padding: 20px 24px 24px; }
-  .waitlist-dialog .waitlist-form fieldset { grid-template-columns: 1fr; gap: 22px; }
+  .waitlist-dialog .waitlist-intro > p { font-size: 15px; }
+  .waitlist-dialog .waitlist-form { padding: 20px 24px 24px; }
+  .waitlist-dialog .waitlist-form fieldset { grid-template-columns: 1fr; gap: 20px; }
   .waitlist-dialog .form-field { grid-column: 1; }
 }
 @media (forced-colors: active) {

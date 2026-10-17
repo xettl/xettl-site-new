@@ -14,7 +14,7 @@ html.signup-open { overflow: hidden; }
 .waitlist-dialog .waitlist-form { padding: 24px 36px 32px; }
 .waitlist-dialog .waitlist-form fieldset { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .waitlist-dialog .form-field:nth-of-type(n+3),.waitlist-dialog #wl-submit-btn { grid-column: 1 / -1; }
-.signup-context { grid-column: 1 / -1; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.signup-context { margin-top: 20px; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
 .signup-context .form-intro { margin: 0 0 8px; max-width: none; font-size: inherit; }
 .signup-context .waitlist-privacy { margin: 0; }
 .signup-context .text-link { font-size: inherit; }

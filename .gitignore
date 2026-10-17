@@ -1,0 +1,45 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE & Editor
+.vscode/
+.idea/
+
+# Node / Scratch (if any)
+node_modules/
+dist/
+public/
+.qa/
+.local-archive/
+# Private notes, setup instructions and work history stay local.
+archive/
+docs/
+*.md
+!/README.md
+*.bundle
+*.patch
+*.diff
+*.bak
+*.tmp
+*.log
+.history/
+.local/
+
+# Credentials and local environment configuration.
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.netlify/
+
+# Impeccable design-critique tool archive (local only)
+.impeccable/
+
+# Local Claude Code / agent tooling (session-specific, not project content)
+.claude/
+.agents/
+skills-lock.json
+.gstack/

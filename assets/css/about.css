@@ -1,0 +1,71 @@
+/* Thesis-first About page. Existing brand and theme tokens remain authoritative. */
+.about-thesis { max-width: 1180px; }
+.about-intro { max-width: 900px; margin-bottom: clamp(56px, 7vw, 88px); }
+.about-intro h1 {
+  margin: 0;
+  max-width: 15ch;
+  font-size: clamp(38px, 5.3vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+.about-intro h1 span { color: var(--accent-text); }
+.about-thesis .about-lead {
+  max-width: 54ch;
+  margin: 24px 0 0;
+  color: var(--text-muted);
+  font-size: clamp(17px, 1.8vw, 20px);
+  line-height: 1.65;
+}
+.about-thesis section { scroll-margin-top: calc(var(--header-h) + 24px); }
+.about-thesis h2 { margin: 0; font-size: clamp(26px, 3vw, 38px); line-height: 1.2; letter-spacing: -.035em; }
+.about-vision {
+  padding: clamp(28px, 4vw, 48px);
+  padding-left: 0;
+  padding-right: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: none;
+}
+.about-thesis .about-vision h2 { font-size: 20px; letter-spacing: -.015em; }
+.about-statement {
+  margin: 22px 0;
+  font-size: clamp(27px, 3.4vw, 42px);
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  font-weight: 650;
+}
+.about-prose { max-width: 66ch; }
+.about-prose p {
+  margin: 20px 0 0;
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.75;
+}
+.about-mission { padding: clamp(48px, 7vw, 80px) 0; }
+.about-section-lead {
+  max-width: 56ch;
+  margin: 18px 0 32px;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+.about-outcomes { margin: 0; }
+.about-outcomes > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+.about-outcomes dt { font-size: 18px; font-weight: 650; line-height: 1.5; }
+.about-outcomes dd { margin: 0; max-width: 55ch; color: var(--text-muted); font-size: 16px; line-height: 1.65; }
+.about-guidance { padding-bottom: clamp(48px, 7vw, 80px); }
+.about-guidance h2 { max-width: 26ch; }
+.about-start { padding-top: 40px; border-top: 1px solid var(--border); }
+.about-start .button { margin-top: 28px; }
+.about-prose .about-status { font-size: 14px; line-height: 1.65; }
+@media (max-width: 767px) {
+  .about-outcomes > div { grid-template-columns: 1fr; gap: 8px; padding: 20px 0; }
+  .about-prose p { font-size: 16px; }
+  .about-vision { padding: 24px 0; }
+}

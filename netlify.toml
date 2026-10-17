@@ -1,0 +1,44 @@
+[build]
+  command = "npm run build"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/js/site-config.js"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# Keep old campaign URLs useful without publishing additional signup surfaces.
+[[redirects]]
+  from = "/waitlist"
+  to = "/#waitlist"
+  status = 302
+
+[[redirects]]
+  from = "/learn/*"
+  to = "/resources/"
+  status = 301
+
+[[redirects]]
+  from = "/newsletter/*"
+  to = "/resources/"
+  status = 301
+
+[[redirects]]
+  from = "/survey/*"
+  to = "/#waitlist"
+  status = 302

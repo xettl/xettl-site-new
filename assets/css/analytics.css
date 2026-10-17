@@ -1,0 +1,15 @@
+.analytics-choice {
+  position: fixed; inset: auto 16px 16px auto; z-index: 100;
+  width: min(440px, calc(100vw - 32px)); padding: 20px;
+  border: 1px solid var(--border, #d5dce5); border-radius: 16px;
+  background: var(--surface, #fff); color: var(--text, #0d1420);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 14%); font-size: 14px;
+}
+.analytics-choice p { margin: 0 0 8px; line-height: 1.55; }
+.analytics-choice > a { text-decoration: underline; }
+.analytics-choice-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.analytics-choice-actions .button { flex: 1; min-height: 44px; padding: 10px 14px; font-size: 14px; }
+.analytics-settings { display: block; min-height: 44px; margin-top: 8px; padding: 6px 0; background: transparent; border: 0; color: inherit; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.analytics-settings:focus-visible, .analytics-choice button:focus-visible, .analytics-choice a:focus-visible { outline: 3px solid var(--brand-blue, #1266f1); outline-offset: 3px; }
+.analytics-settings:disabled { cursor: default; }
+@media print { .analytics-choice, .analytics-settings { display: none; } }

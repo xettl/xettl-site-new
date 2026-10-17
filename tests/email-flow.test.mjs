@@ -22,7 +22,10 @@ test('signed email links cannot be forged or switched between confirmation and u
   assert.equal(verifyEmailToken(token.slice(0,-2)+'xx','confirm',secret),null);
   assert.equal(verifyEmailToken(token+'.extra','confirm',secret),null);
   const message=emailMessage(row,env);
-  assert.match(message.html,/#confirm=/);
+  assert.ok(!message.html.includes('#confirm=') && !message.text.includes('Confirm your email'));
+  assert.match(message.html,/Thank you for signing up to the waitlist!/);
+  assert.equal(message.attachments[0].content_id,'xettl-logo');
+  assert.match(message.html,/cid:xettl-logo/);
   assert.match(message.text,/#unsubscribe=/);
   assert.ok(!message.html.includes('product news, launch announcements and offers'));
   assert.equal(message.reply_to,'privacy@getxettl.com');
@@ -32,12 +35,12 @@ test('worker uses stable send keys, marks saved sends, and leaves transient fail
   const calls=[]; const provider=crypto.randomUUID();
   const transport=async(url,options)=>{
     calls.push({url:String(url),...options});
-    if(String(url).endsWith('/claim_waitlist_emails'))return Response.json([row]);
+    if(String(url).endsWith('/claim_waitlist_thank_you_emails'))return Response.json([row]);
     if(String(url)==='https://api.resend.com/emails')return Response.json({id:provider});
     return Response.json(true);
   };
   assert.equal((await createWorker(env,transport)()).status,204);
-  assert.equal(calls[1].headers['Idempotency-Key'],'waitlist-confirmation/'+row.id);
+  assert.equal(calls[1].headers['Idempotency-Key'],'waitlist-thank-you/'+row.id);
   assert.deepEqual(JSON.parse(calls[2].body),{p_id:row.id,p_provider_id:provider,p_permanent_failure:false});
   calls.length=0;
   assert.equal((await createWorker(env,async(url,options)=>String(url)==='https://api.resend.com/emails' ? new Response('',{status:429}) : transport(url,options))()).status,503);
@@ -49,7 +52,7 @@ test('preference endpoint rejects GET, forged tokens, cross-origin and oversized
   const handler=createPreferencesHandler(env,()=>{throw Error('must not call');});
   const request=(data,origin='https://getxettl.com')=>new Request('https://getxettl.com/api/email-preferences',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(data)});
   assert.equal((await handler(new Request('https://getxettl.com/api/email-preferences'))).status,405);
-  const input={purpose:'confirm',action:'confirm',token:signEmailToken(row.id,'confirm',secret)};
+  const input={purpose:'unsubscribe',action:'unsubscribe',token:signEmailToken(row.signupId,'unsubscribe',secret)};
   assert.equal((await handler(request(input,'https://evil.example'))).status,403);
   assert.equal((await handler(request({...input,token:'forged'}))).status,400);
   assert.equal((await handler(request(null))).status,400);
@@ -74,7 +77,7 @@ test('webhooks verify raw-body signature and reject tampering or replay outside 
   assert.equal((await handler(req(body,new Date(Date.now()-600000)))).status,400);
 });
 
-test('database queues only new signups; confirmation, expiry, unsubscribe and suppression preserve original choices',async()=>{
+test('single opt-in subscribes selected categories without claiming ownership; thank-you and unsubscribe preserve suppression',async()=>{
   const db=new PGlite();
   try{
     await db.exec('create role anon; create role authenticated; create role service_role;');
@@ -89,38 +92,34 @@ test('database queues only new signups; confirmation, expiry, unsubscribe and su
     assert.equal((await db.query('select count(*) from private.waitlist_email_outbox')).rows[0].count,0);
     await save('owner@example.com');
     await save('owner@example.com',{newsletter:true,marketing:true});
-    const queue=(await db.query('select public.claim_waitlist_emails() result')).rows[0].result;
-    assert.equal(queue.length,1); assert.equal(queue[0].marketing,false);
-    assert.equal((await db.query('select public.claim_waitlist_emails() result')).rows[0].result.length,0);
+    assert.equal((await db.query('select public.claim_waitlist_emails() result')).rows[0].result.length,0,'old worker cannot send confirmations');
+    const claim=async()=>(await db.query('select public.claim_waitlist_thank_you_emails() result')).rows[0].result;
+    const queue=await claim(); assert.equal(queue.length,1); assert.equal(queue[0].kind,'thank_you');
     const current=queue[0]; const providerId=crypto.randomUUID();
-    await db.query('select public.finish_waitlist_email($1,$2,false)',[current.id,providerId]);
-    const action=async(act,purpose='confirm',scope='all',id=current.id)=>(await db.query('select public.waitlist_email_action($1,$2,$3,$4) result',[id,purpose,act,scope])).rows[0].result;
-    await action('preview');
-    assert.equal((await db.query('select newsletter_status from private.waitlist_signups where id=$1',[current.signupId])).rows[0].newsletter_status,'pending');
-    assert.equal((await action('confirm')).confirmed,true);
     let profile=(await db.query('select * from private.waitlist_signups where id=$1',[current.signupId])).rows[0];
-    assert.equal(profile.newsletter_status,'verified'); assert.equal(profile.marketing_status,'not_requested');
-    await action('unsubscribe','unsubscribe','newsletter',current.signupId);
-    await action('confirm');
-    assert.equal((await db.query('select newsletter_status from private.waitlist_signups where id=$1',[current.signupId])).rows[0].newsletter_status,'unsubscribed');
-    assert.equal((await action('confirm','unsubscribe','all',current.signupId)).error,'invalid_link');
+    assert.equal(profile.newsletter_status,'subscribed'); assert.equal(profile.marketing_status,'not_requested');
+    assert.equal(profile.email_verified_at,null,'form choice must not be labelled as verified ownership');
+    await db.query('select public.finish_waitlist_email($1,$2,false)',[current.id,providerId]);
+    const action=async(act,purpose='unsubscribe',scope='all',id=current.signupId)=>(await db.query('select public.waitlist_email_action($1,$2,$3,$4) result',[id,purpose,act,scope])).rows[0].result;
+    await action('preview');
+    assert.equal((await action('confirm','confirm','all',current.id)).error,'confirmation_removed');
+    await action('unsubscribe','unsubscribe','newsletter');
+    await save('owner@example.com',{newsletter:true,marketing:true});
+    profile=(await db.query('select * from private.waitlist_signups where id=$1',[current.signupId])).rows[0];
+    assert.equal(profile.newsletter_status,'unsubscribed');assert.equal(profile.marketing_status,'not_requested');
+    assert.equal((await db.query('select count(*) from private.waitlist_email_outbox')).rows[0].count,1);
     await db.query('select public.record_waitlist_email_event($1,$2,$3)',['msg_bounce',providerId,'email.bounced']);
-    assert.equal((await action('confirm')).error,'email_stopped');
+    assert.ok((await db.query('select email_suppressed_at from private.waitlist_signups where id=$1',[current.signupId])).rows[0].email_suppressed_at);
     await db.query('select public.record_waitlist_email_event($1,$2,$3)',['msg_delivered',providerId,'email.delivered']);
     assert.equal((await db.query('select delivery_status from private.waitlist_email_outbox where id=$1',[current.id])).rows[0].delivery_status,'bounced');
-    await db.query("update private.waitlist_email_outbox set expires_at=now()-interval '1 minute' where id=$1",[current.id]);
-    assert.equal((await action('confirm')).error,'expired_link');
-    await save('uncertain@example.com');
-    const uncertain=(await db.query('select public.claim_waitlist_emails() result')).rows[0].result[0];
+    await save('uncertain@example.com'); const uncertain=(await claim())[0];
     await db.query("update private.waitlist_email_outbox set first_attempt_at=now()-interval '21 hours',lease_until=now()-interval '3 minutes' where id=$1",[uncertain.id]);
-    assert.equal((await db.query('select public.claim_waitlist_emails() result')).rows[0].result.length,0);
-    assert.equal((await db.query('select delivery_status from private.waitlist_email_outbox where id=$1',[uncertain.id])).rows[0].delivery_status,'failed');
+    assert.equal((await claim()).length,0);
     for(const role of ['anon','authenticated']){
       await db.exec('set role '+role);
-      await assert.rejects(db.query('select public.claim_waitlist_emails()'));
+      await assert.rejects(db.query('select public.claim_waitlist_thank_you_emails()'));
       await assert.rejects(db.query('select * from private.waitlist_email_outbox'));
-      await assert.rejects(action('preview'));
-      await db.exec('reset role');
+      await assert.rejects(action('preview')); await db.exec('reset role');
     }
   }finally{await db.close();}
 });

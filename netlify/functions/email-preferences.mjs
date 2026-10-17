@@ -9,6 +9,7 @@ export function createPreferencesHandler(env = process.env, fetcher = fetch) {
     if ((env.EMAIL_TOKEN_SECRET || '').length < 32) return json(503,{error:'unavailable'});
     let data;
     try { data=JSON.parse(await limitedBody(request)); } catch { return json(400,{error:'invalid_request'}); }
+    if (data?.purpose==='confirm' || data?.action==='confirm') return json(400,{error:'confirmation_removed'});
     if (!data || typeof data !== 'object' || Array.isArray(data) || !['preview','confirm','unsubscribe'].includes(data.action) || !['confirm','unsubscribe'].includes(data.purpose) || (data.scope !== undefined && !['all','newsletter','marketing'].includes(data.scope))) return json(400,{error:'invalid_request'});
     const id=verifyEmailToken(data.token,data.purpose,env.EMAIL_TOKEN_SECRET);
     if (!id || (data.action==='confirm' && data.purpose!=='confirm')) return json(400,{error:'invalid_link'});

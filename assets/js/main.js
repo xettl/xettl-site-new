@@ -211,15 +211,15 @@
       say('Saving your signup…', 'pending');
       try {
         const result = await api.submit({
-          version: 4, requestId: requestId, ...data, privacyVersion: '2026-10-17-email',
+          version: 4, requestId: requestId, ...data, privacyVersion: '2026-10-17-thank-you',
           termsVersion: '2026-10-17', emailPreferencesVersion: '2026-10-17'
         });
         confirmed = true;
         window.XettlAnalytics?.track('waitlist_signup_completed');
         say(result.emailStatus === 'accepted'
-          ? 'You’re on the waitlist. Your signup is saved, and a confirmation email is on its way.'
+          ? 'You’re on the waitlist. Your signup is saved, and a thank-you email is on its way.'
           : window.XETTL_SITE_CONFIG?.emailEnabled
-            ? 'You’re on the waitlist. Your signup is saved. Check your inbox for a confirmation; delivery may take a few minutes.'
+            ? 'You’re on the waitlist. Your signup is saved. A thank-you email will arrive shortly; no further action is needed.'
             : 'You’re on the waitlist. Your signup is saved. No need to sign up again.', 'success');
         submit.querySelector('span').textContent = 'You’re on the list';
         connection.textContent = '';

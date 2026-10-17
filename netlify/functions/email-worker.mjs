@@ -5,7 +5,7 @@ export function createWorker(env = process.env, fetcher = fetch) {
     if (env.XETTL_EMAIL_ENABLED !== 'true') return new Response(null,{status:204});
     if (!env.RESEND_API_KEY || (env.EMAIL_TOKEN_SECRET || '').length < 32 || !/^Xettl <updates@mail\.getxettl\.com>$/.test(env.XETTL_EMAIL_FROM || '')) return new Response(null,{status:503});
     try {
-      const rows = await rpc(env,'claim_waitlist_emails',{},fetcher);
+      const rows = await rpc(env,'claim_waitlist_thank_you_emails',{},fetcher);
       for (const row of rows) {
         // Reserved synthetic domains must never be delivered, even if queued manually.
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email) || /@[^@]*\.test$/i.test(row.email)) {
@@ -14,7 +14,7 @@ export function createWorker(env = process.env, fetcher = fetch) {
         }
         const sent = await fetcher('https://api.resend.com/emails',{
           method:'POST',redirect:'error',signal:AbortSignal.timeout(6000),
-          headers:{Authorization:'Bearer ' + env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':'waitlist-confirmation/' + row.id},
+          headers:{Authorization:'Bearer ' + env.RESEND_API_KEY,'Content-Type':'application/json','Idempotency-Key':'waitlist-thank-you/' + row.id},
           body:JSON.stringify(emailMessage(row,env))
         });
         if (!sent.ok) {

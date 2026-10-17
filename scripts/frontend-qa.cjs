@@ -136,7 +136,7 @@ async function run() {
     await page.waitForFunction(() => document.querySelector('#wl-status').dataset.state === 'error');
     check(requests.length === 2 && requests[0].requestId === requests[1].requestId, 'retry reuses idempotency identifier');
     check(requests[0].version === 4 && requests[0].adultConfirmed === true && requests[0].termsAccepted === true && requests[0].privacyAcknowledged === true && requests[0].emailPreferences.newsletter === false && requests[0].emailPreferences.marketing === false, 'signup works with no optional email subscriptions');
-    check(requests[0].privacyVersion === '2026-10-17-email' && requests[0].termsVersion === '2026-10-17' && requests[0].emailPreferencesVersion === '2026-10-17', 'legal and preference versions are sent with signup');
+    check(requests[0].privacyVersion === '2026-10-17-thank-you' && requests[0].termsVersion === '2026-10-17' && requests[0].emailPreferencesVersion === '2026-10-17', 'legal and preference versions are sent with signup');
     await page.locator('#wl-feature').fill('A clear account setup before I arrive.');
     mode = 'bad-ack';
     await page.locator('#wl-submit-btn').click();

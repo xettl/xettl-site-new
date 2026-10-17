@@ -32,8 +32,8 @@ async function run() {
         check(await page.locator('[data-theme-toggle]').count()===1 && await page.locator('[data-theme-toggle]').isVisible(), 'one theme toggle is visible at '+width+'px');
         check(await page.locator('[data-theme-choice]').count()===0, 'three-option theme picker is removed');
         check(await page.locator('.site-header').evaluate(node=>getComputedStyle(node).borderBottomWidth==='0px'), 'header has no hard divider line');
-        check(!(await page.locator('#wl-newsletter').isChecked()) && !(await page.locator('#wl-marketing').isChecked()), 'newsletter and marketing start unchecked');
-        check(await page.locator('#wl-newsletter').getAttribute('required') === null && await page.locator('#wl-marketing').getAttribute('required') === null, 'email opt-ins are optional');
+        check(!(await page.locator('#wl-updates').isChecked()) && await page.locator('#waitlist-form input[type="checkbox"]').count()===3, 'one unchecked email choice and three total checkboxes');
+        check(await page.locator('#wl-updates').getAttribute('required') === null, 'email updates are optional');
         check(await page.locator('#wl-terms').getAttribute('required') !== null && !(await page.locator('#wl-terms').isChecked()), 'terms acknowledgment requires an explicit check');
         check(await page.locator('#wl-adult').getAttribute('required') !== null && !(await page.locator('#wl-adult').isChecked()), 'adult confirmation is required and unchecked');
         if (width >= 768) {
@@ -80,12 +80,12 @@ async function run() {
     check(await page.evaluate(() => document.querySelector('#waitlist-dialog').open && document.activeElement.id === 'wl-name'), 'join button opens modal and focuses name');
     check(await page.evaluate(() => !window.XettlJourneyScene.frame), 'modal pauses the background city');
     await page.locator('#wl-name').fill('Keep my draft');
-    await page.locator('#wl-newsletter').check();
+    await page.locator('#wl-updates').check();
     await closeSignup(page);
     check(await page.locator('.hero-v2-actions .button').evaluate(node => node === document.activeElement), 'closing returns focus to the trigger');
     await openSignup(page);
     check(await page.locator('#wl-name').inputValue() === 'Keep my draft', 'reopening preserves unsent details');
-    check(await page.locator('#wl-newsletter').isChecked() && !(await page.locator('#wl-marketing').isChecked()), 'reopening preserves separate email choices');
+    check(await page.locator('#wl-updates').isChecked(), 'reopening preserves the optional email choice');
     let trapped = true;
     for (let i = 0; i < 16; i++) { await page.keyboard.press('Tab'); trapped = trapped && await page.evaluate(() => !document.hasFocus() || document.querySelector('#waitlist-dialog').contains(document.activeElement)); }
     check(trapped, 'native modal excludes background controls from keyboard traversal');
@@ -136,7 +136,7 @@ async function run() {
     await page.waitForFunction(() => document.querySelector('#wl-status').dataset.state === 'error');
     check(requests.length === 2 && requests[0].requestId === requests[1].requestId, 'retry reuses idempotency identifier');
     check(requests[0].version === 4 && requests[0].adultConfirmed === true && requests[0].termsAccepted === true && requests[0].privacyAcknowledged === true && requests[0].emailPreferences.newsletter === false && requests[0].emailPreferences.marketing === false, 'signup works with no optional email subscriptions');
-    check(requests[0].privacyVersion === '2026-10-17-thank-you' && requests[0].termsVersion === '2026-10-17' && requests[0].emailPreferencesVersion === '2026-10-17', 'legal and preference versions are sent with signup');
+    check(requests[0].privacyVersion === '2026-10-17-combined-updates' && requests[0].termsVersion === '2026-10-17' && requests[0].emailPreferencesVersion === '2026-10-17-combined-opt-in', 'legal and preference versions are sent with signup');
     await page.locator('#wl-feature').fill('A clear account setup before I arrive.');
     mode = 'bad-ack';
     await page.locator('#wl-submit-btn').click();
@@ -155,11 +155,11 @@ async function run() {
     await page.locator('#wl-submit-btn').click();
     await page.waitForFunction(() => document.querySelector('#wl-status').textContent.includes('Too many'));
     check(await page.locator('#wl-feature').inputValue() !== '', 'rate limit retains feedback');
-    await page.locator('#wl-newsletter').check();
+    await page.locator('#wl-updates').check();
     const beforePreferenceEdit = requests.at(-1).requestId;
     await page.locator('#wl-submit-btn').click();
     await page.waitForFunction(() => document.querySelector('#wl-status').textContent.includes('Too many'));
-    check(requests.at(-1).requestId !== beforePreferenceEdit && requests.at(-1).emailPreferences.newsletter === true && requests.at(-1).emailPreferences.marketing === false, 'changing an email choice sends a new idempotent request without bundling subscriptions');
+    check(requests.at(-1).requestId !== beforePreferenceEdit && requests.at(-1).emailPreferences.newsletter === true && requests.at(-1).emailPreferences.marketing === true, 'checking the combined email choice records both categories in a new idempotent request');
     mode = 'success';
     const before = requests.length;
     await page.locator('#wl-submit-btn').click();
@@ -175,11 +175,11 @@ async function run() {
       check((await page.locator('#wl-status').innerText()).includes('Your signup is saved.'), 'stored signup remains successful without promising email when status is ' + emailStatus);
     }
     emailStatus = 'accepted';
-    for (const [newsletter,marketing] of [[false,false],[true,false],[false,true],[true,true]]) {
+    for (const selected of [false,true]) {
       await page.reload(); await fill(page);
-      await page.locator('#wl-newsletter').setChecked(newsletter); await page.locator('#wl-marketing').setChecked(marketing);
+      await page.locator('#wl-updates').setChecked(selected);
       await page.locator('#wl-submit-btn').click(); await page.waitForFunction(() => document.querySelector('#wl-status').dataset.state==='success');
-      check(requests.at(-1).emailPreferences.newsletter===newsletter && requests.at(-1).emailPreferences.marketing===marketing, 'independent email choices saved: newsletter='+newsletter+', marketing='+marketing);
+      check(requests.at(-1).emailPreferences.newsletter===selected && requests.at(-1).emailPreferences.marketing===selected, 'combined email choice saved: '+selected);
     }
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(base + '/');

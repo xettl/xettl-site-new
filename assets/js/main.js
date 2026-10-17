@@ -144,8 +144,8 @@
         termsAccepted: inputs.termsAccepted.checked,
         privacyAcknowledged: inputs.termsAccepted.checked,
         emailPreferences: {
-          newsletter: document.getElementById('wl-newsletter').checked,
-          marketing: document.getElementById('wl-marketing').checked
+          newsletter: document.getElementById('wl-updates').checked,
+          marketing: document.getElementById('wl-updates').checked
         }
       };
     }
@@ -211,8 +211,8 @@
       say('Saving your signup…', 'pending');
       try {
         const result = await api.submit({
-          version: 4, requestId: requestId, ...data, privacyVersion: '2026-10-17-thank-you',
-          termsVersion: '2026-10-17', emailPreferencesVersion: '2026-10-17'
+          version: 4, requestId: requestId, ...data, privacyVersion: '2026-10-17-combined-updates',
+          termsVersion: '2026-10-17', emailPreferencesVersion: '2026-10-17-combined-opt-in'
         });
         confirmed = true;
         window.XettlAnalytics?.track('waitlist_signup_completed');

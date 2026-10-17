@@ -54,7 +54,7 @@ test('privacy upgrade preserves existing signup evidence and accepts new wording
     await db.exec(await readFile(new URL('../supabase/migrations/202610170002_dual_analytics_privacy.sql', import.meta.url), 'utf8'));
     assert.deepEqual((await db.query('select * from private.waitlist_signups')).rows, before);
     assert.deepEqual((await db.query('select * from private.waitlist_requests')).rows, evidence);
-    const updated = { ...original, requestId: crypto.randomUUID(), ...contract.versions };
+    const updated = { ...original, requestId: crypto.randomUUID(), ...contract.versions, privacyVersion:'2026-10-17-dual-analytics' };
     assert.equal((await save(updated)).rows[0].result.receipt.saved, true);
     assert.equal((await db.query('select count(*) from private.waitlist_signups')).rows[0].count, 1);
     assert.equal((await db.query('select privacy_version from private.waitlist_signups')).rows[0].privacy_version, '2026-10-17-analytics');

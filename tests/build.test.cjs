@@ -9,7 +9,7 @@ test('production builds support both providers, either independently, and no ana
   const root = path.resolve(__dirname, '..');
   fs.mkdirSync(path.join(root, '.qa'), { recursive: true });
   const fixture = fs.mkdtempSync(path.join(root, '.qa/build-analytics-'));
-  for (const name of ['assets', 'lib', 'about-us', 'resources', 'privacy', 'terms', 'waitlist', 'index.html', 'robots.txt', 'sitemap.xml']) fs.cpSync(path.join(root, name), path.join(fixture, name), { recursive: true });
+  for (const name of ['assets', 'lib', 'about-us', 'resources', 'privacy', 'terms', 'waitlist', 'email-preferences', 'index.html', 'robots.txt', 'sitemap.xml']) fs.cpSync(path.join(root, name), path.join(fixture, name), { recursive: true });
   fs.mkdirSync(path.join(fixture, 'scripts'));
   fs.copyFileSync(path.join(root, 'scripts/build-site.cjs'), path.join(fixture, 'scripts/build-site.cjs'));
   const build = overrides => spawnSync(process.execPath, ['scripts/build-site.cjs'], { cwd: fixture, encoding: 'utf8', env: { ...process.env, CONTEXT: 'production', XETTL_WAITLIST_ENDPOINT: '/api/waitlist', XETTL_CONTACT_EMAIL: 'owner@example.test', XETTL_POSTHOG_TOKEN: '', XETTL_POSTHOG_HOST: 'https://us.i.posthog.com', XETTL_GA4_ID: '', XETTL_ANALYTICS_PREVIEW: '', ...overrides } });
@@ -22,6 +22,8 @@ test('production builds support both providers, either independently, and no ana
     assert.equal(context.window.XETTL_SITE_CONFIG.analytics.ga4Id, ga4 ? 'G-XETTLTEST1' : '');
     assert.equal(fs.existsSync(path.join(fixture, 'public/assets/js/vendor/posthog.js')), posthog);
     assert.equal(fs.existsSync(path.join(fixture, 'public/assets/js/vendor/POSTHOG-LICENSE.txt')), posthog);
+    const preferences = fs.readFileSync(path.join(fixture, 'public/email-preferences/index.html'), 'utf8');
+    assert.ok(!preferences.includes('analytics.js') && !preferences.includes('site-config.js'), 'signed email link pages must not load analytics');
   }
   const invalid = build({ XETTL_GA4_ID: 'not-a-measurement-id' });
   assert.notEqual(invalid.status, 0);

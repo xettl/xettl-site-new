@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Email preferences | Xettl</title>
+  <link rel="canonical" href="https://getxettl.com/email-preferences/">
+  <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/email-preferences.css">
+  <script src="/assets/js/email-preferences.js" defer></script>
+</head>
+<body>
+  <main class="email-card">
+    <a class="brand" href="/" aria-label="Xettl home">Xettl</a>
+    <h1 id="heading">Your email preferences</h1>
+    <p id="status" role="status" aria-live="polite">Checking your link…</p>
+    <div id="choices" hidden>
+      <p id="summary"></p>
+      <button id="confirm" type="button" hidden>Confirm email address</button>
+      <fieldset id="unsubscribe-options" hidden>
+        <legend>Which emails would you like to stop?</legend>
+        <label><input type="radio" name="scope" value="all" checked> All optional emails</label>
+        <label><input type="radio" name="scope" value="newsletter"> Newsletter only</label>
+        <label><input type="radio" name="scope" value="marketing"> Product updates and offers only</label>
+      </fieldset>
+      <button id="unsubscribe" type="button" class="secondary">Unsubscribe</button>
+    </div>
+    <button id="retry" type="button" hidden>Try again</button>
+    <p class="footnote">Unsubscribing keeps your waitlist position. To leave the waitlist, request deletion or get help with an expired link, email <a href="mailto:privacy@getxettl.com">privacy@getxettl.com</a>.</p>
+    <a href="/privacy/">Privacy notice</a>
+  </main>
+</body>
+</html>

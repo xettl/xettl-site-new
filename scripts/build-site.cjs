@@ -7,6 +7,7 @@ const output = path.join(root, 'public');
 const config = {
   waitlistEndpoint: process.env.XETTL_WAITLIST_ENDPOINT || '',
   contactEmail: process.env.XETTL_CONTACT_EMAIL || '',
+  emailEnabled: process.env.XETTL_EMAIL_ENABLED === 'true',
   analytics: {
     enabled: Boolean((process.env.XETTL_POSTHOG_TOKEN || '').trim() || (process.env.XETTL_GA4_ID || '').trim()) && (process.env.CONTEXT === 'production' || process.env.XETTL_ANALYTICS_PREVIEW === 'true'),
     token: (process.env.XETTL_POSTHOG_TOKEN || '').trim(),
@@ -34,7 +35,7 @@ if (release && (!config.waitlistEndpoint || !config.contactEmail)) {
 if (path.dirname(output) !== root || path.basename(output) !== 'public') throw new Error('Invalid build destination');
 fs.mkdirSync(output, { recursive: true });
 fs.readdirSync(output).forEach(name => fs.rmSync(path.join(output, name), { recursive: true, force: true }));
-const pages = ['index.html', 'about-us', 'resources', 'privacy', 'terms', 'waitlist', 'robots.txt', 'sitemap.xml'];
+const pages = ['index.html', 'about-us', 'resources', 'privacy', 'terms', 'waitlist', 'email-preferences', 'robots.txt', 'sitemap.xml'];
 for (const name of pages) {
   fs.cpSync(path.join(root, name), path.join(output, name), { recursive: true });
 }
@@ -51,7 +52,7 @@ function enhancePages(directory) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     const file = path.join(directory, entry.name);
     if (entry.isDirectory()) enhancePages(file);
-    else if (entry.name.endsWith('.html')) {
+    else if (entry.name.endsWith('.html') && !file.startsWith(path.join(output, 'email-preferences') + path.sep)) {
       const prefix = path.relative(path.dirname(file), output).split(path.sep).join('/') || '.';
       let html = fs.readFileSync(file, 'utf8');
       html = html.replace('</head>', '<link rel="stylesheet" href="' + prefix + '/assets/css/analytics.css" />\n</head>');

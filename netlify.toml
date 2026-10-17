@@ -18,6 +18,14 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
+  for = "/email-preferences/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    Referrer-Policy = "no-referrer"
+    X-Robots-Tag = "noindex, nofollow"
+    Content-Security-Policy = "default-src 'none'; script-src https://getxettl.com/assets/js/email-preferences.js https://xettl-site-new.netlify.app/assets/js/email-preferences.js; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+
+[[headers]]
   for = "/assets/js/site-config.js"
   [headers.values]
     Cache-Control = "no-store"
